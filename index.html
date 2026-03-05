@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Twine</title>
+  <style>
+    :root{
+      --bg0:#07110c;      /* deep forest */
+      --bg1:#0b1a12;      /* forest panel */
+      --card:#0f2419;     /* card */
+      --card2:#122c1f;    /* hover */
+      --text:#e9fff2;
+      --muted:#b7d8c6;
+      --green:#52ff9a;
+      --green2:#1faa6b;
+      --accent:#0b2a4a;   /* dark blue accent */
+      --accent2:#0d3a63;
+      --ring: rgba(82,255,154,.25);
+      --shadow: 0 14px 40px rgba(0,0,0,.45);
+      --radius: 18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 20% 10%, rgba(82,255,154,.10), transparent 60%),
+        radial-gradient(900px 500px at 85% 35%, rgba(11,42,74,.22), transparent 55%),
+        linear-gradient(180deg, var(--bg0), #050a07 70%);
+      overflow-x:hidden;
+    }
+
+    .wrap{max-width:1120px;margin:0 auto;padding:26px 18px 60px}
+    header{
+      display:flex;align-items:center;justify-content:space-between;gap:14px;
+      padding:18px 18px;border-radius:var(--radius);
+      background: linear-gradient(135deg, rgba(15,36,25,.85), rgba(11,26,18,.65));
+      border:1px solid rgba(82,255,154,.10);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      position:sticky;top:14px;z-index:10;
+    }
+
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:38px;height:38px;border-radius:14px;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(82,255,154,.85), rgba(31,170,107,.25) 55%, rgba(11,42,74,.35) 100%),
+        linear-gradient(135deg, rgba(82,255,154,.15), rgba(11,42,74,.18));
+      box-shadow: 0 0 0 6px rgba(82,255,154,.06);
+      border:1px solid rgba(82,255,154,.18);
+      position:relative;
+    }
+    .logo:after{
+      content:"";
+      position:absolute;inset:10px 12px;
+      border-radius:999px;
+      border:2px solid rgba(233,255,242,.75);
+      border-left-color: transparent;
+      transform: rotate(-16deg);
+      opacity:.9;
+    }
+
+    .brand h1{margin:0;font-size:18px;letter-spacing:.4px}
+    .brand p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 12px;border-radius:999px;
+      background: rgba(18,44,31,.55);
+      border:1px solid rgba(82,255,154,.12);
+    }
+
+    input[type="search"]{
+      width:min(420px, 62vw);
+      padding:12px 14px;border-radius:999px;
+      background: rgba(7,17,12,.55);
+      border:1px solid rgba(82,255,154,.14);
+      outline:none;color:var(--text);
+      transition: .2s ease;
+    }
+    input[type="search"]:focus{
+      border-color: rgba(82,255,154,.35);
+      box-shadow: 0 0 0 6px var(--ring);
+    }
+
+    .btn{
+      cursor:pointer;
+      padding:11px 14px;border-radius:999px;
+      background: linear-gradient(135deg, rgba(11,42,74,.75), rgba(13,58,99,.55));
+      border:1px solid rgba(11,42,74,.45);
+      color:var(--text);
+      transition:.2s ease;
+      user-select:none;
+      font-weight:600;
+      letter-spacing:.2px;
+    }
+    .btn:hover{transform: translateY(-1px); filter: brightness(1.07)}
+    .btn:active{transform: translateY(0px); filter: brightness(.98)}
+    .btn.secondary{
+      background: rgba(18,44,31,.55);
+      border:1px solid rgba(82,255,154,.16);
+      font-weight:600;
+    }
+
+    .section{
+      margin-top:18px;
+      display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
+    }
+    .section h2{margin:0;font-size:14px;color:var(--muted);font-weight:700;letter-spacing:.25px}
+    .count{font-size:12px;color:rgba(233,255,242,.75)}
+
+    .grid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap:14px;
+    }
+
+    .card{
+      border-radius:var(--radius);
+      background: linear-gradient(180deg, rgba(15,36,25,.90), rgba(11,26,18,.65));
+      border:1px solid rgba(82,255,154,.10);
+      box-shadow: 0 10px 24px rgba(0,0,0,.35);
+      padding:14px;
+      transition: .22s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .card:hover{
+      transform: translateY(-3px);
+      border-color: rgba(82,255,154,.22);
+      background: linear-gradient(180deg, rgba(18,44,31,.95), rgba(11,26,18,.72));
+    }
+    .card:before{
+      content:"";
+      position:absolute;inset:-60px -40px auto auto;
+      width:160px;height:160px;border-radius:999px;
+      background: radial-gradient(circle, rgba(82,255,154,.18), transparent 60%);
+      pointer-events:none;
+      transform: rotate(20deg);
+    }
+
+    .row{display:flex;gap:12px;align-items:center}
+    .icon{
+      width:44px;height:44px;border-radius:16px;
+      background: rgba(7,17,12,.55);
+      border:1px solid rgba(82,255,154,.16);
+      display:grid;place-items:center;
+      flex:0 0 auto;
+    }
+    .icon span{font-weight:900;color:rgba(233,255,242,.85)}
+    .meta{min-width:0}
+    .title{
+      font-size:14px;margin:0;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .tag{
+      margin-top:4px;
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:11px;color:rgba(233,255,242,.80);
+      padding:6px 10px;border-radius:999px;
+      background: rgba(11,42,74,.45);
+      border:1px solid rgba(11,42,74,.55);
+    }
+
+    .cardActions{display:flex;gap:10px;margin-top:12px}
+    .grow{flex:1}
+    .tiny{
+      padding:9px 12px;border-radius:999px;
+      font-size:12px;
+    }
+    .fav{
+      width:42px;display:grid;place-items:center;
+      background: rgba(18,44,31,.55);
+      border:1px solid rgba(82,255,154,.16);
+    }
+    .fav[aria-pressed="true"]{
+      border-color: rgba(82,255,154,.35);
+      box-shadow: 0 0 0 6px rgba(82,255,154,.08);
+    }
+
+    footer{
+      margin-top:26px;
+      color:rgba(233,255,242,.55);
+      font-size:12px;
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Twine</h1>
+          <p>Made by Mizzery</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <input id="search" type="search" placeholder="Search games..." autocomplete="off" />
+        <button class="btn secondary" id="toggleFavs">Favorites</button>
+        <button class="btn" id="refresh">Refresh</button>
+      </div>
+    </header>
+
+    <div class="section">
+      <div>
+        <h2 id="heading">All Games</h2>
+        <div class="count" id="count">0 games</div>
+      </div>
+      <div class="pill">
+        <span style="color:var(--muted);font-size:12px">Accent</span>
+        <span style="width:10px;height:10px;border-radius:999px;background:var(--accent);display:inline-block"></span>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <footer>Twine • locally hosted HTML game library</footer>
+  </div>
+
+  <script>
+    // ======== TWINE GAME PROTOCOL ========
+    // Add/remove games here:
+    const GAME_LIST = [
+      { name: "10 Minutes Till Dawn", folder: "10-minutes-till-dawn" },
+      { name: "2048 Multitask", folder: "2048-multitask" },
+      { name: "2048", folder: "2048" },
+      { name: "9007199254740992", folder: "9007199254740992" },
+      { name: "A Dance Of Fire And Ice", folder: "a-dance-of-fire-and-ice" },
+      { name: "A Dark Room", folder: "a-dark-room" },
+      { name: "Adrenaline Challenge", folder: "adrenaline-challenge" },
+      { name: "Adventure Drivers", folder: "adventure-drivers" },
+      { name: "Ages Of Conflict", folder: "ages-of-conflict" },
+      { name: "Backrooms 2D", folder: "backrooms-2d" },
+      { name: "Backrooms", folder: "backrooms" },
+      { name: "Bacon May Die", folder: "bacon-may-die" },
+      { name: "Bad Ice Cream 2", folder: "bad-ice-cream-2" },
+      { name: "Bad Ice Cream 3", folder: "bad-ice-cream-3" },
+      { name: "Bad Ice Cream", folder: "bad-ice-cream" },
+      { name: "Baldis Basics", folder: "baldis-basics" },
+      { name: "Basket Random", folder: "basket-random" },
+      { name: "Bitlife", folder: "bitlife" },
+      { name: "Boxing Random", folder: "boxing-random" },
+      { name: "Btts", folder: "btts" },
+      { name: "Buckshot Roulette", folder: "buckshot-roulette" },
+      { name: "Cluster Rush", folder: "cluster-rush" },
+      { name: "Core Ball", folder: "core-ball" },
+      { name: "Creative Kill Chamber", folder: "creative-kill-chamber" },
+      { name: "Crossy Road", folder: "crossy-road" },
+      { name: "Cupcake 2048", folder: "cupcake-2048" },
+      { name: "Dante", folder: "dante" },
+      { name: "Deal Or No Deal", folder: "deal-or-no-deal" },
+      { name: "Death Run 3D", folder: "death-run-3d" },
+      { name: "Drift Boss", folder: "drift-boss" },
+      { name: "Drift Hunters", folder: "drift-hunters" },
+      { name: "Drive Mad", folder: "drive-mad" },
+      { name: "Duck Life 3", folder: "duck-life-3" },
+      { name: "Duck Life 4", folder: "duck-life-4" },
+      { name: "Eggy Car", folder: "eggy-car" },
+      { name: "Fnaw", folder: "fnaw" },
+      { name: "Funny Shooter 2", folder: "funny-shooter-2" },
+      { name: "Funny Shooter", folder: "funny-shooter" },
+      { name: "Getaway Shootout", folder: "getaway-shootout" },
+      { name: "Learn To Fly 2", folder: "learn-to-fly-2" },
+      { name: "Learn To Fly", folder: "learn-to-fly" },
+      { name: "Madalin Stunt Cars 2", folder: "madalin-stunt-cars-2" },
+      { name: "Madalin Stunt Cars 3", folder: "madalin-stunt-cars-3" },
+      { name: "Monkey Mart", folder: "monkey-mart" },
+      { name: "Motox3M 2", folder: "motox3m-2" },
+      { name: "Motox3M Pool", folder: "motox3m-pool" },
+      { name: "Motox3M Spooky", folder: "motox3m-spooky" },
+      { name: "Motox3M Winter", folder: "motox3m-winter" },
+      { name: "Motox3M", folder: "motox3m" },
+      { name: "Resent Client", folder: "resent-client" },
+      { name: "Retro Bowl", folder: "retro-bowl" },
+      { name: "Rooftop Snipers", folder: "rooftop-snipers" },
+      { name: "Run 2", folder: "run-2" },
+      { name: "Run 3", folder: "run-3" },
+      { name: "Scrap Metal", folder: "scrap-metal" },
+      { name: "Slope 2", folder: "slope-2" },
+      { name: "Slope Ball", folder: "slope-ball" },
+      { name: "Slope", folder: "slope" },
+      { name: "Snow Rider 3D", folder: "snow-rider-3d" },
+      { name: "Soccer Random", folder: "soccer-random" },
+      { name: "Stickman Hook", folder: "stickman-hook" },
+      { name: "Super Hot", folder: "super-hot" },
+      { name: "Tanuki Sunset", folder: "tanuki-sunset" },
+      { name: "Tunnel Rush", folder: "tunnel-rush" },
+      { name: "Ultrakill", folder: "ultrakill" },
+      { name: "Vex 3", folder: "vex-3" },
+      { name: "Vex 4", folder: "vex-4" },
+      { name: "Vex 5", folder: "vex-5" },
+      { name: "Vex 6", folder: "vex-6" },
+      { name: "Vex 7", folder: "vex-7" },
+      { name: "Volley Random", folder: "volley-random" },
+      { name: "Worlds Hardest Game 2", folder: "worlds-hardest-game-2" },
+      { name: "Worlds Hardest Game", folder: "worlds-hardest-game" }
+    ];
+
+    // Optional: quick tag guessing (edit anytime)
+    function autoTag(name){
+      const n = name.toLowerCase();
+      if (n.includes("vex")) return "Platformer";
+      if (n.includes("slope") || n.includes("run ")) return "Runner";
+      if (n.includes("bowl") || n.includes("soccer") || n.includes("basket") || n.includes("volley")) return "Sports";
+      if (n.includes("random")) return "Party";
+      if (n.includes("drive") || n.includes("drift") || n.includes("madalin")) return "Driving";
+      if (n.includes("backrooms")) return "Horror";
+      if (n.includes("2048")) return "Puzzle";
+      return "Game";
+    }
+
+    function iconTextFromName(name){
+      const words = name.replace(/[^a-z0-9 ]/gi,"").trim().split(/\s+/).filter(Boolean);
+      if (words.length === 1) return words[0].slice(0,2).toUpperCase();
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+
+    async function loadGames(){
+      // Protocol: games/<folder>/index.html
+      return GAME_LIST.map(g => ({
+        id: g.folder,
+        title: g.name,
+        file: `games/${g.folder}/index.html`,
+        tag: autoTag(g.name),
+        iconText: iconTextFromName(g.name)
+      }));
+    }
+    // ====================================
+
+    const LS_FAV = "twine:favorites";
+    const favs = new Set(JSON.parse(localStorage.getItem(LS_FAV) || "[]"));
+
+    const grid = document.getElementById("grid");
+    const search = document.getElementById("search");
+    const count = document.getElementById("count");
+    const heading = document.getElementById("heading");
+
+    let allGames = [];
+    let showingFavs = false;
+
+    function saveFavs(){
+      localStorage.setItem(LS_FAV, JSON.stringify([...favs]));
+    }
+
+    function openGame(game){
+      const url = new URL("play.html", location.href);
+      url.searchParams.set("title", game.title);
+      url.searchParams.set("file", game.file);
+      url.searchParams.set("id", game.id);
+      location.href = url.toString();
+    }
+
+    function gameCard(game){
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const isFav = favs.has(game.id);
+
+      card.innerHTML = `
+        <div class="row">
+          <div class="icon"><span>${(game.iconText || game.title || "?").slice(0,2).toUpperCase()}</span></div>
+          <div class="meta">
+            <p class="title" title="${game.title}">${game.title}</p>
+            <span class="tag">${game.tag || "Game"}</span>
+          </div>
+        </div>
+        <div class="cardActions">
+          <button class="btn tiny grow">Play</button>
+          <button class="btn tiny fav" aria-pressed="${isFav}" title="Favorite">★</button>
+        </div>
+      `;
+
+      const [playBtn, favBtn] = card.querySelectorAll("button");
+      playBtn.onclick = () => openGame(game);
+      favBtn.onclick = () => {
+        const now = favs.has(game.id);
+        if (now) favs.delete(game.id); else favs.add(game.id);
+        saveFavs();
+        favBtn.setAttribute("aria-pressed", String(!now));
+        if (showingFavs) render();
+      };
+
+      return card;
+    }
+
+    function matches(game, q){
+      q = q.trim().toLowerCase();
+      if (!q) return true;
+      return (game.title || "").toLowerCase().includes(q)
+          || (game.tag || "").toLowerCase().includes(q);
+    }
+
+    function render(){
+      const q = search.value || "";
+      const list = allGames
+        .filter(g => !showingFavs || favs.has(g.id))
+        .filter(g => matches(g, q));
+
+      heading.textContent = showingFavs ? "Favorites" : "All Games";
+      count.textContent = `${list.length} game${list.length===1?"":"s"}`;
+
+      grid.innerHTML = "";
+      for (const g of list) grid.appendChild(gameCard(g));
+    }
+
+    async function boot(){
+      allGames = await loadGames();
+      render();
+    }
+
+    document.getElementById("toggleFavs").onclick = () => {
+      showingFavs = !showingFavs;
+      render();
+    };
+    document.getElementById("refresh").onclick = boot;
+    search.addEventListener("input", render);
+
+    boot();
+  </script>
+</body>
+</html>
